@@ -1,9 +1,23 @@
+from pathlib import Path
+from typing import Union
+import numpy as np
+
+AudioFile = Union[Path, np.ndarray]
+
 class Dataset:
     pass
 
 
 class VTCModel:
-    pass
+
+    def predict(self, audio_file: AudioFile, sampling_rate: int = 16000):
+        pass
+
+    def finetune(self):
+        pass
+
+    def retrain(self):
+        pass
 
 
 class BaseFeatureExtractor:

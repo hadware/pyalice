@@ -11,6 +11,6 @@ tensorboard>=2.0.0
 typing_extensions>=3.7.4
 torch>=1.4.0
 tensorboard>=2.0.0
-pyannote.core==3.7.1
-pyannote.database==3.0.1
+pyannote.core
+pyannote.database
 pyannote.pipeline==1.5
