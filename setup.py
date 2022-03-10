@@ -67,6 +67,9 @@ setup(
         ]
     },
     extras_require={
+        "aclew": [
+            "datalad"
+        ],
         "testing": [
             "pytest",
         ],

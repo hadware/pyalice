@@ -1,3 +1,4 @@
+numpy
 pyannote.audio
 cachetools>=2.0.0
 librosa
@@ -14,3 +15,5 @@ tensorboard>=2.0.0
 pyannote.core
 pyannote.database
 pyannote.pipeline==1.5
+git+ssh://git@github.com/pyannote/pyannote-pipeline@develop#egg=pyannote.pipeline
+
