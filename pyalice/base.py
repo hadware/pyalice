@@ -1,18 +1,32 @@
 from dataclasses import field, dataclass
 from pathlib import Path
-from typing import Union, Dict
+from typing import Union, Dict, List, Optional, Iterable, Text
 
 import numpy as np
+from pyannote.audio.core.io import AudioFile
 from pyannote.core import Segment, Annotation
 from pyannote.database import Protocol, get_protocol
 from sklearn.linear_model import LinearRegression
+from typing_extensions import Literal
+from pyannote.audio.pipelines import MultilabelDetectionPipeline
 
-AudioFile = Union[Path, np.ndarray]
 Features = np.ndarray
 PyannoteProtocol = Union[str, Protocol]
 
 
 class BaseDataset:
+
+    def iter_train(self):
+        pass
+
+    def iter_val(self):
+        pass
+
+    def __iter__(self) -> Iterable[Path]:
+        pass
+
+
+class AudioFilesDataset(BaseDataset):
     pass
 
 
@@ -38,6 +52,7 @@ class AudioSegment:
 class AudioFileSegment:
     audio_file: Path
     segment: Segment
+    label: str
     features: Dict[str, np.ndarray] = field(default_factory=dict)
 
     def audio_segment(self, sampling_rate: float = 1600):
@@ -46,8 +61,11 @@ class AudioFileSegment:
 
 class VTCModel:
 
-    def predict(self, audio_file: AudioFile, sampling_rate: int = 16000) -> Annotation:
-        pass
+    def __init__(self, model: Union[Text, Path], hparams_file: Union[Text, Path] = None):
+        self.mlt_pilepine = MultilabelDetectionPipeline.from_pretrained(model, hparams_file=hparams_file)
+
+    def predict(self, audio_file: AudioFile) -> Annotation:
+        return self.mlt_pilepine.apply(audio_file)
 
     def finetune(self, dataset: BaseDataset):
         pass
@@ -67,9 +85,7 @@ class BaseFeatureExtractor:
 
 
 class PhoneRecognition(BaseFeatureExtractor):
-
-    def retrain(self, dataset: BaseDataset):
-        raise NotImplementedError()
+    pass
 
 
 class SyllableCounter(BaseFeatureExtractor):
@@ -92,7 +108,10 @@ class LinguisticEstimatorPipeline:
         self.linear_estimator = LinearRegression()
 
     def estimate(self, audio_segment: AudioFileSegment):
-        pass
+        for feat_name, feature_proc in self.feature_extractors.items():
+            feat = feature_proc.feature(audio_segment)
+            audio_segment.features[feat_name] = feat
 
-    def retrain_features(self, dataset: BaseDataset, only_features : ):
+    def retrain_features(self, dataset: BaseDataset,
+                         only_features: Optional[List[Literal["syllables", "phones"]]]):
         pass
